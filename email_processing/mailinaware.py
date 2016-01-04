@@ -5,13 +5,18 @@ $Id$
 """
 import copy
 from email.Utils import parseaddr
-
-from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
-
+from django.conf import settings
 from utils import log_exc
 from exceptions import MailInException
 
+def UserModel():
+    try:
+        from django.contrib.auth import get_user_model
+        return get_user_model()
+    except ImportError:
+        from django.contrib.auth.models import User
+        return User
 
 registry = {}
 
@@ -63,8 +68,8 @@ class MailInAwareDestination(object):
         # find principal
         from_hdr = parseaddr(message['From'])[1].lower()
         try:
-            principal = User.objects.get(email=from_hdr)
-        except User.DoesNotExist:
+            principal = UserModel().objects.get(email=from_hdr)
+        except UserModel().DoesNotExist:
             # member not found
             raise MailInException('Member not found: %s'%from_hdr)
 
