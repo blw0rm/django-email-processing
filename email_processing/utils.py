@@ -60,7 +60,7 @@ def getLoads(message, number=None):
 def getSubject(msg):
     """ get mail subject """
     return make_header(
-        decode_header(msg.get('Subject').strip())).__unicode__()
+        decode_header(msg.get('Subject', '').strip())).__unicode__()
 
 
 def getParsedBody(msg):
